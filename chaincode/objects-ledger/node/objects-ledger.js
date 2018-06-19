@@ -10,15 +10,15 @@ const util = require('util');
 
 let Chaincode = class {
 
-  // The Init method is called when the Smart Contract 'fabcar' is instantiated by the blockchain network
+  // The Init method is called when the Smart Contract 'objects-ledger' is instantiated by the blockchain network
   // Best practice is to have any Ledger initialization in separate function -- see initLedger()
   async Init(stub) {
-    console.info('=========== Instantiated fabcar chaincode ===========');
+    console.info('=========== Instantiated objects-ledger chaincode ===========');
     return shim.success();
   }
 
   // The Invoke method is called as a result of an application request to run the Smart Contract
-  // 'fabcar'. The calling application program has also specified the particular smart contract
+  // 'objects-ledger'. The calling application program has also specified the particular smart contract
   // function to be called, with arguments
   async Invoke(stub) {
     let ret = stub.getFunctionAndParameters();
@@ -39,11 +39,11 @@ let Chaincode = class {
   }
 
 /*args = id, name*/
-async addEquipmentType(stub, args){
+async addEquipmentType(stub, args) {
 
 console.info('============= START : addEquipmentType ===========');
     if (args.length != 2) {
-      throw new Error('Incorrect number of arguments. Expecting 2');
+      throw new Error('Incorrect number of arguments. Expecting 2: ID, name');
     }
 
     var type = {
@@ -57,10 +57,10 @@ console.info('============= START : addEquipmentType ===========');
 
 }
 /*args = id, name*/
-async updEquipmentType(stub, args){
+async updEquipmentType(stub, args) {
  console.info('============= START : updEquipmentType ===========');
     if (args.length != 2) {
-      throw new Error('Incorrect number of arguments. Expecting 2');
+      throw new Error('Incorrect number of arguments. Expecting 2: ID, name');
     }
 
     let typeAsBytes = await stub.getState(args[0]);
@@ -73,8 +73,28 @@ async updEquipmentType(stub, args){
 
 }
 
+async addEvent(stub, args) {
+  console.info('============= START : addEvent ===========');
+    if (args.length != 6) {
+      throw new Error('Incorrect number of arguments. Expecting 6: ID, objectID, userID, name, time, state');
+    }
 
- function standardQuery(stub, query){
+    var type = {
+      dataType: 'Event',
+      objectID: args[1]
+      userID: args[2]
+      name: args[3]
+      time: args[4]
+      state: args[5]
+    };
+    //type.dataType
+
+    await stub.putState(args[0], Buffer.from(JSON.stringify(type)));
+    console.info('============= END : addEvent ===========');
+}
+
+
+ function standardQuery(stub, query) {
  let iterator = await stub.getQueryResult(JSON.stringify(query));
 
     let allResults = [];
@@ -104,9 +124,6 @@ async updEquipmentType(stub, args){
 
 }
 
-
-
-
 async listEquipmentType(stub, args){
     console.info('============= START : listType ===========');
     let query={selector: {        
@@ -117,13 +134,15 @@ async listEquipmentType(stub, args){
    return standardQuery(stub,query);
 }
  
-async addEvent(stub,args){
 
-}
-
-
-async listEvents(stub,args){
-
+async listEvents(stub, args){
+  console.info('============= START : listEvents ===========');
+    let query={selector: {        
+                dataType: {
+                  $eq: 'Event'
+                }
+              }};
+   return standardQuery(stub,query);
 }
 /*
  user 
