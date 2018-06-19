@@ -7,6 +7,8 @@
 'use strict';
 const shim = require('fabric-shim');
 const util = require('util');
+const ClientIdentity = require('fabric-shim').ClientIdentity;
+
 
 let Chaincode = class {
 
@@ -75,17 +77,18 @@ async updEquipmentType(stub, args) {
 
 async addEvent(stub, args) {
   console.info('============= START : addEvent ===========');
-    if (args.length != 6) {
-      throw new Error('Incorrect number of arguments. Expecting 6: ID, objectID, userID, name, time, state');
+    if (args.length != 5) {
+      throw new Error('Incorrect number of arguments. Expecting 6: ID, objectID, name, time, state');
     }
-
+    let cid = new ClientIdentity(stub);
     var type = {
       dataType: 'Event',
       objectID: args[1]
-      userID: args[2]
-      name: args[3]
-      time: args[4]
-      state: args[5]
+      //userID: //args[2] //=getID() + getMSPID() !!! //userID = getID(); MSPID = getMSPID(); This ID is guaranteed to be unique within the MSP. https://fabric-shim.github.io/ClientIdentity.html
+      userId: cid.getID() + cid.getMSPID();//use kessak256() if too long (>32 bytes)
+      name: args[2]
+      time: args[3]
+      state: args[4]
     };
     //type.dataType
 
