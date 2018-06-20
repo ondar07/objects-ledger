@@ -22,6 +22,7 @@
  * Writing Your First Blockchain Application
  */
 
+//JUST EXAMLPLE OF SIMPLE CHAINCODE
 package main
 
 /* Imports

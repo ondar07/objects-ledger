@@ -78,7 +78,7 @@ async updEquipmentType(stub, args) {
 async addEvent(stub, args) {
   console.info('============= START : addEvent ===========');
     if (args.length != 5) {
-      throw new Error('Incorrect number of arguments. Expecting 6: ID, objectID, name, time, state');
+      throw new Error('Incorrect number of arguments. Expecting 5: ID, objectID, name, time, state');
     }
     let cid = new ClientIdentity(stub);
     var type = {
