@@ -22,7 +22,9 @@
  * Writing Your First Blockchain Application
  */
 
-//JUST EXAMLPLE OF SIMPLE CHAINCODE
+
+//JUST EXAMPLE OF SIMPLE CHAINCODE (copied from fabric-samples project)
+
 package main
 
 /* Imports
