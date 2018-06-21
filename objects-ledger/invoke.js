@@ -1,9 +1,5 @@
 'use strict';
-/*
-* Copyright IBM Corp All Rights Reserved
-*
-* SPDX-License-Identifier: Apache-2.0
-*/
+
 /*
  * Chaincode Invoke
  */
@@ -55,14 +51,19 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	tx_id = fabric_client.newTransactionID();
 	console.log("Assigning transaction_id: ", tx_id._transaction_id);
 
-	// createCar chaincode function - requires 5 args, ex: args: ['CAR12', 'Honda', 'Accord', 'Black', 'Tom'],
-	// changeCarOwner chaincode function - requires 2 args , ex: args: ['CAR10', 'Dave'],
-	// must send the proposal to endorsing peers
+	
+
+	var payload={
+		something:"fuuu",
+		otherthing:"aaaaaaaaaaa"
+	};
+
+
 	var request = {
 		//targets: let default to the peer assigned to the client
 		chaincodeId: 'objects-ledger',
-		fcn: '',
-		args: [''],
+		fcn: 'addEvent',
+		args: [tx_id.getTransactionID(), JSON.stringify(payload)],
 		chainId: 'mychannel',
 		txId: tx_id
 	};
@@ -147,12 +148,16 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	// check the results in the order the promises were added to the promise all list
 	if (results && results[0] && results[0].status === 'SUCCESS') {
 		console.log('Successfully sent transaction to the orderer.');
+		results.forEach(function(entry) {
+    		console.log(entry);
+		});
 	} else {
 		console.error('Failed to order the transaction. Error code: ' + response.status);
 	}
 
 	if(results && results[1] && results[1].event_status === 'VALID') {
 		console.log('Successfully committed the change to the ledger by the peer');
+
 	} else {
 		console.log('Transaction failed to be committed to the ledger due to ::'+results[1].event_status);
 	}
