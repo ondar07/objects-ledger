@@ -1,8 +1,8 @@
 {
-    "name": "fabcar",
+    "name": "objects-ledger",
     "version": "1.0.0",
     "description": "Hyperledger Fabric Car Sample Application",
-    "main": "fabcar.js",
+    "main": "objects-ledger.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
