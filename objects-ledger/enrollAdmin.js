@@ -5,8 +5,12 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 /*
- * Enroll the admin user
- */
+* Modified by Vlad Duplyakin https://github.com/duplyakin
+*/
+/*
+* Enroll the admin user
+*/
+
 
 var Fabric_Client = require('fabric-client');
 var Fabric_CA_Client = require('fabric-ca-client');

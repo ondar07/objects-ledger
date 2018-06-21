@@ -5,6 +5,9 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 /*
+* Modified by Vlad Duplyakin https://github.com/duplyakin
+*/
+/*
  * Register and Enroll a user
  */
 

@@ -1,7 +1,7 @@
 {
     "name": "objects-ledger",
     "version": "1.0.0",
-    "description": "Hyperledger Fabric Car Sample Application",
+    "description": "Objects ledger Sample Application",
     "main": "objects-ledger.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,12 +11,11 @@
         "fabric-client": "~1.1.0",
         "grpc": "^1.6.0"
     },
-    "author": "Anthony O'Dowd",
+    "author": "Vlad Duplyakin",
     "license": "Apache-2.0",
     "keywords": [
-        "Hyperledger",
-        "Fabric",
-        "Car",
+        "Objects",
+        "Ledger",
         "Sample",
         "Application"
     ]

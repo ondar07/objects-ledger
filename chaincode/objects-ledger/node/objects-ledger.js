@@ -1,4 +1,13 @@
 'use strict';
+/*
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+*/
+/*
+ * Modified by Vlad Duplyakin https://github.com/duplyakin
+ */
+
 const shim = require('fabric-shim');
 const util = require('util');
 const ClientIdentity = require('fabric-shim').ClientIdentity;
@@ -54,7 +63,7 @@ async addEvent(stub, args) {
 }
 
 
-async listEvents(stub, args){
+async listEvents(stub, args) {
   console.info('============= START : listEvents ===========');
     let query={selector: {        
                 dataType: {
@@ -87,6 +96,7 @@ async listEvents(stub, args){
         return Buffer.from(JSON.stringify(allResults));
       }
     }
+  console.info('============= END : listEvents ===========');
 }
 
 };

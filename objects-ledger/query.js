@@ -1,8 +1,15 @@
 'use strict';
-
 /*
- * Chaincode query
+* Copyright IBM Corp All Rights Reserved
+*
+* SPDX-License-Identifier: Apache-2.0
+*/
+/*
+ * Modified by Vlad Duplyakin https://github.com/duplyakin
  */
+/*
+* Chaincode query
+*/
 
 var Fabric_Client = require('fabric-client');
 var path = require('path');

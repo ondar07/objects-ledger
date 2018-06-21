@@ -5,6 +5,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Exit on first error
+
+# Modified by Vlad Duplyakin https://github.com/duplyakin
+
 set -e
 
 # don't rewrite paths for Windows Git Bash users
