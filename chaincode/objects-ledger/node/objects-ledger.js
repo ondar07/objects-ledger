@@ -48,26 +48,25 @@ let Chaincode = class {
     console.info('============= END : Initialize Ledger ===========');
   }
 
-async addEvent(stub, args) {
+async addElement(stub, args) {
   console.info('============= START : addEvent ===========');
     if (args.length != 2) {
-      throw new Error('Incorrect number of arguments. Expecting 5: ID, objectID, name, time, state');
+      throw new Error('Incorrect number of arguments. Expecting 2: ID, data');
     }
-    var type = {
-      dataType: 'Event',
-      data: args[1]
-    };
 
-    await stub.putState(args[0], Buffer.from(JSON.stringify(type)));
+    await stub.putState(args[0], Buffer.from(JSON.stringify(args[1])));
     console.info('============= END : addEvent ===========');
 }
 
 
-async listEvents(stub, args) {
+async listElements(stub,  args){
   console.info('============= START : listEvents ===========');
+     if (args.length != 1) {
+      throw new Error('Incorrect number of arguments. Expecting 1: datatype');
+    }
     let query={selector: {        
-                dataType: {
-                  $eq: 'Event'
+                clazz: {
+                  $eq: args[0]
                 }
               }};
               let iterator = await stub.getQueryResult(JSON.stringify(query));
@@ -96,8 +95,45 @@ async listEvents(stub, args) {
         return Buffer.from(JSON.stringify(allResults));
       }
     }
-  console.info('============= END : listEvents ===========');
+
+async queryItem(stub, args) {
+  console.info('============= START : queryItem ===========');
+    let query={selector: {
+                key: {
+                  $eq: args[0]
+              }};
+              let iterator = await stub.getQueryResult(JSON.stringify(query));
+
+    let allResults = [];
+    while (true) {
+      let res = await iterator.next();
+
+      if (res.value && res.value.value.toString()) {
+        let jsonRes = {};
+        console.log(res.value.value.toString('utf8'));
+
+        jsonRes.Key = res.value.key;
+        try {
+          jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+        } catch (err) {
+          console.log(err);
+          jsonRes.Record = res.value.value.toString('utf8');
+        }
+        allResults.push(jsonRes);
+      }
+      if (res.done) {
+        console.log('end of data');
+        await iterator.close();
+        console.info(allResults);
+        return Buffer.from(JSON.stringify(allResults));
+      }
+    }
+  console.info('============= END : queryItem ===========');
 }
+
+
+
+
 
 };
 
