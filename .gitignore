@@ -1,2 +1,2 @@
-./objects-ledger/hfc-key-store*
-./objects-ledger/node_modules*
+objects-ledger/hfc-key-store/**
+objects-ledger/node_modules/**
