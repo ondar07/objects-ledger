@@ -100,36 +100,15 @@ async listElements(stub,  args) {
 }
 async queryItem(stub, args) {
   console.info('============= START : queryItem ===========');
-    let query={selector: {
-                key: {
+    /*let query={selector: {
+                Key: {
                   $eq: args[0]
               }}};
-              let iterator = await stub.getQueryResult(JSON.stringify(query));
+    */
+    let res = await stub.getState(args[0]);
 
-    let allResults = [];
-    while (true) {
-      let res = await iterator.next();
+    return Buffer.from(JSON.stringify(res));
 
-      if (res.value && res.value.value.toString()) {
-        let jsonRes = {};
-        console.log(res.value.value.toString('utf8'));
-
-        jsonRes.Key = res.value.key;
-        try {
-          jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
-        } catch (err) {
-          console.log(err);
-          jsonRes.Record = res.value.value.toString('utf8');
-        }
-        allResults.push(jsonRes);
-      }
-      if (res.done) {
-        console.log('end of data');
-        await iterator.close();
-        console.info(allResults);
-        return Buffer.from(JSON.stringify(allResults));
-      }
-    }
   console.info('============= END : queryItem ===========');
 }
 
