@@ -1,0 +1,21 @@
+{
+    "name": "myapp",
+    "version": "1.0.0",
+    "description": "My Application",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "fabric-ca-client": "stable",
+        "fabric-client": "stable",
+        "grpc": "^1.6.0"
+    },
+    "author": "Adygzhy Ondar",
+    "license": "Apache-2.0",
+    "keywords": [
+        "Hyperledger",
+        "Fabric",
+        "Application"
+    ]
+}
+
