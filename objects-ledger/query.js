@@ -56,8 +56,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	const request = {
 		//targets : --- letting this default to the peers assigned to the channel
 		chaincodeId: 'objects-ledger',
-		fcn: 'listEvents',
-		args: ['']
+		fcn: 'listElements',
+		args: ['com.sbt.test.entities.EquipmentUnit']
 	};
 
 	// send the query proposal to the peer

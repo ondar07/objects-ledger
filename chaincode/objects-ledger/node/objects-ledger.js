@@ -65,10 +65,8 @@ async listElements(stub,  args) {
         throw new Error('Incorrect number of arguments. Expecting 1: datatype');
     }
     let query = {
-        selector: {
-            clazz: {
-                $eq: args[0]
-            }
+        "selector":{
+            "_id": { "$gt": null }
         }
     };
     let iterator = await stub.getQueryResult(JSON.stringify(query));
