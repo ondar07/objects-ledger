@@ -15,9 +15,9 @@ export MSYS_NO_PATHCONV=1
 starttime=$(date +%s)
 LANGUAGE=${1:-"golang"}
 CC_SRC_PATH=github.com/objects-ledger/go
-if [ "$LANGUAGE" = "node" -o "$LANGUAGE" = "NODE" ]; then
-	CC_SRC_PATH=/opt/gopath/src/github.com/objects-ledger/node
-fi
+#if [ "$LANGUAGE" = "node" -o "$LANGUAGE" = "NODE" ]; then
+#	CC_SRC_PATH=/opt/gopath/src/github.com/objects-ledger/node
+#fi
 
 # clean the keystore
 rm -rf ./hfc-key-store

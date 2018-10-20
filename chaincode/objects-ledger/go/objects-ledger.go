@@ -22,123 +22,96 @@
  * Writing Your First Blockchain Application
  */
 
-
-//JUST EXAMPLE OF SIMPLE CHAINCODE (copied from fabric-samples project)
-
 package main
 
-/* Imports
- * 4 utility libraries for formatting, handling bytes, reading and writing JSON, and string manipulation
- * 2 specific Hyperledger Fabric specific libraries for Smart Contracts
- */
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
+	// this lib makes access control based on the cert attributes 
+	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 )
 
 // Define the Smart Contract structure
 type SmartContract struct {
 }
 
-// Define the car structure, with 4 properties.  Structure tags are used by encoding/json library
-type Car struct {
-	Make   string `json:"make"`
-	Model  string `json:"model"`
-	Colour string `json:"colour"`
-	Owner  string `json:"owner"`
-}
 
-/*
- * The Init method is called when the Smart Contract "fabcar" is instantiated by the blockchain network
- * Best practice is to have any Ledger initialization in separate function -- see initLedger()
- */
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
 
-/*
- * The Invoke method is called as a result of an application request to run the Smart Contract "fabcar"
- * The calling application program has also specified the particular smart contract function to be called, with arguments
- */
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 	// Retrieve the requested Smart Contract function and arguments
 	function, args := APIstub.GetFunctionAndParameters()
 	// Route to the appropriate handler function to interact with the ledger appropriately
-	if function == "queryCar" {
-		return s.queryCar(APIstub, args)
+	if function == "queryItem" {
+		return s.queryItem(APIstub, args)
 	} else if function == "initLedger" {
 		return s.initLedger(APIstub)
-	} else if function == "createCar" {
-		return s.createCar(APIstub, args)
-	} else if function == "queryAllCars" {
-		return s.queryAllCars(APIstub)
-	} else if function == "changeCarOwner" {
-		return s.changeCarOwner(APIstub, args)
+	} else if function == "addElement" {
+		return s.addElement(APIstub, args)
+	} else if function == "listElements" {
+		return s.listElements(APIstub)
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")
 }
 
-func (s *SmartContract) queryCar(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1")
-	}
-
-	carAsBytes, _ := APIstub.GetState(args[0])
-	return shim.Success(carAsBytes)
-}
-
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
-	cars := []Car{
-		Car{Make: "Toyota", Model: "Prius", Colour: "blue", Owner: "Tomoko"},
-		Car{Make: "Ford", Model: "Mustang", Colour: "red", Owner: "Brad"},
-		Car{Make: "Hyundai", Model: "Tucson", Colour: "green", Owner: "Jin Soo"},
-		Car{Make: "Volkswagen", Model: "Passat", Colour: "yellow", Owner: "Max"},
-		Car{Make: "Tesla", Model: "S", Colour: "black", Owner: "Adriana"},
-		Car{Make: "Peugeot", Model: "205", Colour: "purple", Owner: "Michel"},
-		Car{Make: "Chery", Model: "S22L", Colour: "white", Owner: "Aarav"},
-		Car{Make: "Fiat", Model: "Punto", Colour: "violet", Owner: "Pari"},
-		Car{Make: "Tata", Model: "Nano", Colour: "indigo", Owner: "Valeria"},
-		Car{Make: "Holden", Model: "Barina", Colour: "brown", Owner: "Shotaro"},
-	}
+	return shim.Success([]byte("Init ledger successfully"))
+}
 
-	i := 0
-	for i < len(cars) {
-		fmt.Println("i is ", i)
-		carAsBytes, _ := json.Marshal(cars[i])
-		APIstub.PutState("CAR"+strconv.Itoa(i), carAsBytes)
-		fmt.Println("Added", cars[i])
-		i = i + 1
-	}
+// This is an example of making access control decisions!
+// There may be a variety of such checks.
+// For example, the following function can be used for making access control decisions
+// based on 'objectsledger.Admin' attribute value.
+// So users who don't have such attribute will not have access to
+// some functions.
+func isAdmin(APIstub shim.ChaincodeStubInterface) bool {
+	err := cid.AssertAttributeValue(APIstub, "objectsledger.Admin", "true")
+	return err == nil
+}
 
+func (s *SmartContract) addElement(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	// For example, only admins can add elements to ledger
+	// (but all users can query info, see below functions 'queryItem', 'listElements')
+	// This is only to demonstrate how to make access control decision.
+	if !isAdmin(APIstub) {
+		return shim.Error("Only admins are allowed to add element")
+	}
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expecting 2: ID, data")
+	}
+	elemID, elemData := args[0], args[1]
+	// check if this element exists yet
+	elemAsBytes, _ := APIstub.GetState(elemID)
+	if elemAsBytes != nil {
+		return shim.Error("The element with such id exists already")
+	}
+	APIstub.PutState(elemID, []byte(elemData))
 	return shim.Success(nil)
 }
 
-func (s *SmartContract) createCar(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 5 {
-		return shim.Error("Incorrect number of arguments. Expecting 5")
+func (s *SmartContract) queryItem(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 1 {
+		return shim.Error("Need only 1 arg -- item id")
 	}
-
-	var car = Car{Make: args[1], Model: args[2], Colour: args[3], Owner: args[4]}
-
-	carAsBytes, _ := json.Marshal(car)
-	APIstub.PutState(args[0], carAsBytes)
-
-	return shim.Success(nil)
+	itemAsBytes, _ := APIstub.GetState(args[0])
+	if itemAsBytes == nil {
+		return shim.Error("There is no an item with such id")
+	}
+	return shim.Success(itemAsBytes)
 }
 
-func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Response {
 
-	startKey := "CAR0"
-	endKey := "CAR999"
+func (s *SmartContract) listElements(APIstub shim.ChaincodeStubInterface) sc.Response {
+
+	startKey := "1"
+	endKey := "999999"
 
 	resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
 	if err != nil {
@@ -173,28 +146,9 @@ func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Res
 	}
 	buffer.WriteString("]")
 
-	fmt.Printf("- queryAllCars:\n%s\n", buffer.String())
-
 	return shim.Success(buffer.Bytes())
 }
 
-func (s *SmartContract) changeCarOwner(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
-	}
-
-	carAsBytes, _ := APIstub.GetState(args[0])
-	car := Car{}
-
-	json.Unmarshal(carAsBytes, &car)
-	car.Owner = args[1]
-
-	carAsBytes, _ = json.Marshal(car)
-	APIstub.PutState(args[0], carAsBytes)
-
-	return shim.Success(nil)
-}
 
 // The main function is only relevant in unit test mode. Only included here for completeness.
 func main() {
